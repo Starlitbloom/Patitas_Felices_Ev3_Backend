@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.patitas.contacto_service.model.EstadoMensaje;
 import com.patitas.contacto_service.model.MensajeContacto;
 import com.patitas.contacto_service.repository.MensajeContactoRepository;
+import com.patitas.contacto_service.webclient.NotificacionClient;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +33,7 @@ public class MensajeService {
     private static final String REGEX_CELULAR = "^(?:\\+?56)?9\\d{8}$"; // +56 9 1234 5678 | 912345678
 
     private final MensajeContactoRepository mensajeRepository;
+    private final NotificacionClient notificacionClient;
 
     /* ---------------- LEER ---------------- */
 
@@ -86,8 +88,12 @@ public class MensajeService {
         return mensajeRepository.save(mensaje);
     }
 
-    /** El personal escribe una respuesta: el mensaje queda RESPONDIDO. */
-    public MensajeContacto responder(Long id, String respuesta, String correoPersonal) {
+    /**
+     * El personal escribe una respuesta: el mensaje queda RESPONDIDO.
+     * Si el mensaje se envió con sesión iniciada, se avisa al usuario por
+     * notificacion-service (WebClient) para que lo vea en la campanita.
+     */
+    public MensajeContacto responder(Long id, String respuesta, String correoPersonal, String authHeader) {
         if (respuesta == null || respuesta.trim().length() < 5) {
             throw new NegocioException("respuesta", "La respuesta debe tener al menos 5 caracteres.");
         }
@@ -102,7 +108,19 @@ public class MensajeService {
         mensaje.setRespondidoPor(correoPersonal);
         mensaje.setFechaRespuesta(LocalDateTime.now());
         mensaje.setEstado(EstadoMensaje.RESPONDIDO);
-        return mensajeRepository.save(mensaje);
+        MensajeContacto guardado = mensajeRepository.save(mensaje);
+
+        // Comunicación entre microservicios: contacto-service → notificacion-service
+        if (guardado.getCorreoUsuario() != null) {
+            notificacionClient.crearNotificacion(
+                guardado.getCorreoUsuario(),
+                "Respondimos tu mensaje",
+                "La clínica respondió tu consulta sobre '" + guardado.getAsunto() + "'. Revisa la respuesta en Mis mensajes.",
+                "CONTACTO",
+                "/mis-mensajes",
+                authHeader);
+        }
+        return guardado;
     }
 
     /* ---------------- ELIMINAR ---------------- */

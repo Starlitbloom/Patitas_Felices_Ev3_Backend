@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,11 +22,13 @@ import org.springframework.http.HttpStatus;
 import com.patitas.contacto_service.model.EstadoMensaje;
 import com.patitas.contacto_service.model.MensajeContacto;
 import com.patitas.contacto_service.repository.MensajeContactoRepository;
+import com.patitas.contacto_service.webclient.NotificacionClient;
 
 @ExtendWith(MockitoExtension.class)
 class MensajeServiceTest {
 
     @Mock private MensajeContactoRepository mensajeRepository;
+    @Mock private NotificacionClient notificacionClient;
 
     @InjectMocks private MensajeService mensajeService;
 
@@ -94,11 +98,28 @@ class MensajeServiceTest {
         when(mensajeRepository.findById(1L)).thenReturn(Optional.of(m));
         when(mensajeRepository.save(any(MensajeContacto.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        MensajeContacto r = mensajeService.responder(1L, "Sí, atendemos conejos.", "jo.medina@duoc.cl");
+        MensajeContacto r = mensajeService.responder(1L, "Sí, atendemos conejos.", "jo.medina@duoc.cl", "Bearer token");
 
         assertEquals(EstadoMensaje.RESPONDIDO, r.getEstado());
         assertEquals("jo.medina@duoc.cl", r.getRespondidoPor());
         assertNotNull(r.getFechaRespuesta());
+        // Sin cuenta asociada (correoUsuario null) no se llama a notificacion-service
+        verify(notificacionClient, never()).crearNotificacion(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void responder_mensajeDeUsuarioConCuenta_leAvisaPorWebClient() {
+        MensajeContacto m = datosValidos();
+        m.setId(3L);
+        m.setEstado(EstadoMensaje.PENDIENTE);
+        m.setCorreoUsuario("camila.rojas@gmail.com");
+        when(mensajeRepository.findById(3L)).thenReturn(Optional.of(m));
+        when(mensajeRepository.save(any(MensajeContacto.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        mensajeService.responder(3L, "Sí, atendemos conejos.", "jo.medina@duoc.cl", "Bearer token");
+
+        verify(notificacionClient).crearNotificacion(eq("camila.rojas@gmail.com"), eq("Respondimos tu mensaje"),
+            anyString(), eq("CONTACTO"), eq("/mis-mensajes"), eq("Bearer token"));
     }
 
     @Test
@@ -108,7 +129,7 @@ class MensajeServiceTest {
         when(mensajeRepository.findById(2L)).thenReturn(Optional.of(m));
 
         NegocioException e = assertThrows(NegocioException.class,
-            () -> mensajeService.responder(2L, "Respuesta tardía", "ma.calfileo@duoc.cl"));
+            () -> mensajeService.responder(2L, "Respuesta tardía", "ma.calfileo@duoc.cl", "Bearer token"));
         assertEquals(HttpStatus.CONFLICT, e.getStatus());
     }
 

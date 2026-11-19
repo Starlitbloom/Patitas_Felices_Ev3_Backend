@@ -140,9 +140,11 @@ class MensajeControllerTest {
     void responder_guardaQuienResponde() throws Exception {
         MensajeContacto respondido = mensaje(1L, EstadoMensaje.RESPONDIDO, null);
         respondido.setRespondidoPor("jo.medina@duoc.cl");
-        when(mensajeService.responder(1L, "Sí, atendemos conejos.", "jo.medina@duoc.cl")).thenReturn(respondido);
+        when(mensajeService.responder(1L, "Sí, atendemos conejos.", "jo.medina@duoc.cl", "Bearer token-de-prueba"))
+            .thenReturn(respondido);
 
         mockMvc.perform(put("/api/v1/mensajes/1/responder").principal(sesion("jo.medina@duoc.cl", "RECEPCIONISTA"))
+                .header("Authorization", "Bearer token-de-prueba")
                 .contentType(MediaType.APPLICATION_JSON).content("{\"respuesta\":\"Sí, atendemos conejos.\"}"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.estado").value("RESPONDIDO"))

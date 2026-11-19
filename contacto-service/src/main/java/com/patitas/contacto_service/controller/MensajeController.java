@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -129,7 +130,9 @@ public class MensajeController {
         return ResponseEntity.ok(mensajeService.cambiarEstado(id, estado));
     }
 
-    @Operation(summary = "Responder mensaje", description = "ADMIN y RECEPCIONISTA. El mensaje queda RESPONDIDO.",
+    @Operation(summary = "Responder mensaje",
+        description = "ADMIN y RECEPCIONISTA. El mensaje queda RESPONDIDO. Si quien lo envió tenía cuenta, "
+            + "se le crea un aviso en notificacion-service (comunicación por WebClient).",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
             examples = @ExampleObject(value = "{ \"respuesta\": \"¡Hola! Sí, atendemos conejos los sábados de 9 a 14 h.\" }"))))
     @ApiResponse(responseCode = "200", description = "Respuesta guardada",
@@ -138,8 +141,8 @@ public class MensajeController {
     @PreAuthorize("hasAnyRole('ADMIN','RECEPCIONISTA')")
     @PutMapping("/{id}/responder")
     public ResponseEntity<MensajeContacto> responder(@PathVariable Long id, @RequestBody Map<String, String> datos,
-            Authentication auth) {
-        return ResponseEntity.ok(mensajeService.responder(id, datos.get("respuesta"), auth.getName()));
+            Authentication auth, @RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(mensajeService.responder(id, datos.get("respuesta"), auth.getName(), authHeader));
     }
 
     @Operation(summary = "Eliminar mensaje", description = "Solo ADMIN.")
