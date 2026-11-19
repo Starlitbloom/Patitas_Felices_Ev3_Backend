@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ReportServiceApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(ReportServiceApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(ReportServiceApplication.class, args);
+        // http://localhost:8090/swagger-ui/index.html
+        // Consola de Swagger para probar los endpoints
+    }
 }
