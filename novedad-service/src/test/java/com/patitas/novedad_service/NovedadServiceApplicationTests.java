@@ -1,3 +1,4 @@
+
 package com.patitas.novedad_service;
 
 import org.junit.jupiter.api.Test;
@@ -6,8 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class NovedadServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextLoads() {
+        // Verifica que el microservicio inicia
+        // correctamente conectado a MySQL.
+    }
 }

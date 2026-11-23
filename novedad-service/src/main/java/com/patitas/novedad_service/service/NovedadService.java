@@ -46,10 +46,14 @@ public class NovedadService {
         novedad.setTitulo(datos.getTitulo());
         novedad.setDescripcion(datos.getDescripcion());
         novedad.setImagenUrl(datos.getImagenUrl());
-        novedad.setActiva(datos.getActiva());
+
+        if (datos.getActiva() != null) {
+            novedad.setActiva(datos.getActiva());
+        }
 
         return repository.save(novedad);
-    }
+}
+
 
     // Eliminar una novedad
     public void eliminar(Long id) {

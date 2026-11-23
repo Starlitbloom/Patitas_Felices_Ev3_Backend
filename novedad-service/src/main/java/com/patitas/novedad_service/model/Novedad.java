@@ -3,6 +3,7 @@ package com.patitas.novedad_service.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,25 +14,36 @@ public class Novedad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "El título es obligatorio")
+    @Size(max = 150, message = "El título no puede superar los 150 caracteres")
+    @Column(nullable = false, length = 150)
     private String titulo;
 
-    @Column(length = 2000)
+    @NotBlank(message = "La descripción es obligatoria")
+    @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres")
+    @Column(nullable = false, length = 2000)
     private String descripcion;
 
+    @Size(max = 500, message = "La URL de imagen no puede superar los 500 caracteres")
+    @Column(length = 500)
     private String imagenUrl;
 
+    @Column(nullable = false)
     private LocalDateTime fechaPublicacion;
 
+    @Column(nullable = false)
     private Boolean activa = true;
 
     public Novedad() {
     }
 
     @PrePersist
-    public void asignarFecha() {
+    public void asignarValoresIniciales() {
         if (fechaPublicacion == null) {
             fechaPublicacion = LocalDateTime.now();
+        }
+        if (activa == null) {
+            activa = true;
         }
     }
 
