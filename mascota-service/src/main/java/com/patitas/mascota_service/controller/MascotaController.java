@@ -7,7 +7,7 @@ import java.util.List;
 
 // @Valid: activa las validaciones del DTO (@NotBlank, @Size...) antes de entrar al método
 import jakarta.validation.Valid;
-
+import lombok.RequiredArgsConstructor;
 // @Operation: texto que aparece en Swagger junto a cada endpoint
 import io.swagger.v3.oas.annotations.Operation;
 // @Tag: nombre del grupo de endpoints en Swagger
@@ -57,16 +57,12 @@ import com.patitas.mascota_service.service.MascotaService;
 // Nombre y descripción del grupo en Swagger
 @Tag(name = "Mascotas", description = "CRUD de mascotas y solicitudes de cambio")
 // El controller SOLO recibe la petición y llama al service; la lógica está en MascotaService
+// Lombok crea el constructor con los campos "final" (el service); Spring lo usa para entregarlo
+@RequiredArgsConstructor
 public class MascotaController {
 
     // El service con la lógica de negocio
     private final MascotaService servicio;
-
-    // Constructor: Spring entrega el service automáticamente
-    public MascotaController(MascotaService servicio) {
-        // Guarda el service para usarlo en los métodos
-        this.servicio = servicio;
-    }
 
     // READ (listar): responde a GET /api/v1/mascotas
     @GetMapping("/mascotas")
