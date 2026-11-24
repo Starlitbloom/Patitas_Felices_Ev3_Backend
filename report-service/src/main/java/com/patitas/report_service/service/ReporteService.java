@@ -93,12 +93,13 @@ public class ReporteService {
 
         Optional<List<Map<String, Object>>> usuarios = authClient.listarUsuarios(authHeader);
         Optional<List<Map<String, Object>>> mascotas = mascotaClient.listarMascotas(authHeader);
+        Optional<List<Map<String, Object>>> solicitudes = mascotaClient.listarSolicitudes(authHeader);
         Optional<List<Map<String, Object>>> citas = citaClient.listarCitas(authHeader);
         Optional<Map<String, Object>> contacto = contactoClient.estadisticas(authHeader);
         Optional<Map<String, Object>> notificaciones = notificacionClient.estadisticas(authHeader);
 
         reporte.put("usuarios", usuarios.map(this::seccionUsuarios).orElse(null));
-        reporte.put("mascotas", mascotas.map(this::seccionMascotas).orElse(null));
+        reporte.put("mascotas", mascotas.map(m -> seccionMascotas(m, solicitudes.orElse(null))).orElse(null));
         reporte.put("citas", citas.map(this::seccionCitas).orElse(null));
         reporte.put("contacto", contacto.orElse(null));
         reporte.put("notificaciones", notificaciones.orElse(null));
@@ -210,9 +211,20 @@ public class ReporteService {
         return s;
     }
 
-    Map<String, Object> seccionMascotas(List<Map<String, Object>> mascotas) {
+    /**
+     * @param solicitudes solicitudes de cambio (null si mascota-service no las entregó)
+     */
+    Map<String, Object> seccionMascotas(List<Map<String, Object>> mascotas, List<Map<String, Object>> solicitudes) {
         Map<String, Object> s = new LinkedHashMap<>();
         s.put("total", mascotas.size());
+        s.put("conDatosIncompletos", mascotas.stream().filter(m -> Boolean.FALSE.equals(m.get("completo"))).count());
+        s.put("solicitudesPendientes", solicitudes == null ? null : contarEstado(solicitudes, "pendiente"));
+        // Estado clínico: al-dia | tratamiento | pendiente (vacío cuenta como pendiente, igual que el frontend)
+        Map<String, Long> porEstado = new LinkedHashMap<>();
+        porEstado.put("alDia", mascotas.stream().filter(m -> "al-dia".equalsIgnoreCase(texto(m.get("estado")))).count());
+        porEstado.put("tratamiento", mascotas.stream().filter(m -> "tratamiento".equalsIgnoreCase(texto(m.get("estado")))).count());
+        porEstado.put("pendiente", mascotas.stream().filter(m -> "pendiente".equalsIgnoreCase(vacioComo(m.get("estado"), "pendiente"))).count());
+        s.put("porEstado", porEstado);
         s.put("porEspecie", contarPor(mascotas, m -> vacioComo(m.get("especie"), "Sin especificar")));
         return s;
     }
@@ -269,6 +281,7 @@ public class ReporteService {
                 "id", u.get("id"),
                 "nombre", texto(u.get("nombre")) + " " + texto(u.get("apellidos")),
                 "correo", texto(u.get("correo")),
+                "comuna", texto(u.get("comuna")),
                 "rol", rolDe(u),
                 "fechaRegistro", texto(u.get("fechaRegistro"))))
             .toList();

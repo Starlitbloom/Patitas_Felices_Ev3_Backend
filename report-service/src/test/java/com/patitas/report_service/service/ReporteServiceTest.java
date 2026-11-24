@@ -82,9 +82,9 @@ class ReporteServiceTest {
 
     private List<Map<String, Object>> mascotas() {
         return List.of(
-            Map.of("nombre", "Rocky", "especie", "Perro"),
-            Map.of("nombre", "Luna", "especie", "Perro"),
-            Map.of("nombre", "Michi", "especie", "Gato"));
+            Map.of("nombre", "Rocky", "especie", "Perro", "estado", "al-dia", "completo", true),
+            Map.of("nombre", "Luna", "especie", "Perro", "estado", "tratamiento", "completo", true),
+            Map.of("nombre", "Michi", "especie", "Gato", "completo", false)); // sin estado = pendiente
     }
 
     private List<Map<String, Object>> citas() {
@@ -174,6 +174,11 @@ class ReporteServiceTest {
 
         Map<String, Object> m = (Map<String, Object>) r.get("mascotas");
         assertEquals("Perro", ((List<Map<String, Object>>) m.get("porEspecie")).get(0).get("nombre"));
+        assertEquals(1L, m.get("conDatosIncompletos"));
+        Map<String, Long> porEstado = (Map<String, Long>) m.get("porEstado");
+        assertEquals(1L, porEstado.get("alDia"));
+        assertEquals(1L, porEstado.get("tratamiento"));
+        assertEquals(1L, porEstado.get("pendiente"));
         assertEquals("ma.calfileo@duoc.cl", r.get("generadoPor"));
     }
 

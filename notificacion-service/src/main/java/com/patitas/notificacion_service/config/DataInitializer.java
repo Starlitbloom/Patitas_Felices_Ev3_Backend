@@ -23,7 +23,7 @@ public class DataInitializer implements CommandLineRunner {
         crear("camila.rojas@gmail.com", "¡Bienvenida a Patitas Felices!",
             "Ya puedes registrar a tus mascotas y solicitar citas desde tu perfil.", TipoNotificacion.SISTEMA, "/perfil");
         crear("camila.rojas@gmail.com", "Recordatorio de vacuna",
-            "A una de tus mascotas le corresponde un refuerzo de vacuna este mes.", TipoNotificacion.MASCOTA, "/mis-mascotas");
+            "A una de tus mascotas le corresponde un refuerzo de vacuna este mes.", TipoNotificacion.MASCOTA, "/mascotas");
         crear("ma.calfileo@duoc.cl", "Nuevo mensaje de contacto",
             "Hay mensajes pendientes en la bandeja de contacto.", TipoNotificacion.CONTACTO, "/admin/mensajes");
     }
