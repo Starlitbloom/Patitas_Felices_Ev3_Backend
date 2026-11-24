@@ -2,6 +2,7 @@ package com.patitas.mascota_service.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +34,7 @@ public class SolicitudCambio {
     private String raza;  // Raza nueva propuesta
     private String sexo;  // Sexo nuevo propuesto
     private String peso;  // Peso nuevo propuesto
+    @Column(columnDefinition = "LONGTEXT")
     private String imagen;  // Imagen nueva propuesta
     private String descripcion;  // Descripción nueva propuesta
     private String estado;  // pendiente | aprobada | rechazada

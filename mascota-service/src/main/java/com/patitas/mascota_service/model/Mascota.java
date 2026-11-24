@@ -1,5 +1,6 @@
 package com.patitas.mascota_service.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +32,7 @@ public class Mascota {
     private String nombreDueno;  // Nombre completo del dueño (sin ñ para evitar problemas en JSON y BD)
     private String correoDueno;  // correo del dueno: vincula la mascota con su usuario
     private boolean completo;    // true cuando ya tiene raza, sexo, peso e imagen
+    @Column(columnDefinition = "LONGTEXT")
     private String imagen;  // Ruta de la foto (ej: /img/golden.jpg)
     private String estado;       // al-dia | tratamiento | pendiente
     private String descripcion;  // Texto libre sobre la mascota
