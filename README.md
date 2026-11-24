@@ -31,7 +31,7 @@ El sistema está dividido en **10 microservicios Spring Boot**, cada uno con su 
 |---|---|---|
 | María Calfileo | Starlitbloom | auth-service, contacto-service, notificacion-service, report-service |
 | Rocío Cruces | ChioBlossom | novedad-service, veterinario-service, cita-service |
-| _[Nombre completo]_ | fanny698 | mascota-service, historial-service, servicio-clinico-service |
+| Fanny Chamorro| fanny698 | mascota-service, historial-service, servicio-clinico-service |
 
 ---
 
