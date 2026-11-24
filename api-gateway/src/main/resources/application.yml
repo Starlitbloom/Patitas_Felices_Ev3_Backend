@@ -1,0 +1,98 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # Rutas por nombre de servicio registrado en Eureka.
+      # Se quita el primer segmento y el resto se envia sin modificar.
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        - id: mascota-service
+          uri: lb://mascota-service
+          predicates:
+            - Path=/mascota/**
+          filters:
+            - StripPrefix=1
+        - id: historial-service
+          uri: lb://historial-service
+          predicates:
+            - Path=/historial/**
+          filters:
+            - StripPrefix=1
+        - id: servicio-clinico-service
+          uri: lb://servicio-clinico-service
+          predicates:
+            - Path=/servicio-clinico/**
+          filters:
+            - StripPrefix=1
+        - id: veterinario-service
+          uri: lb://veterinario-service
+          predicates:
+            - Path=/veterinario/**
+          filters:
+            - StripPrefix=1
+        - id: cita-service
+          uri: lb://cita-service
+          predicates:
+            - Path=/cita/**
+          filters:
+            - StripPrefix=1
+        - id: novedad-service
+          uri: lb://novedad-service
+          predicates:
+            - Path=/novedad/**
+          filters:
+            - StripPrefix=1
+        - id: contacto-service
+          uri: lb://contacto-service
+          predicates:
+            - Path=/contacto/**
+          filters:
+            - StripPrefix=1
+        - id: notificacion-service
+          uri: lb://notificacion-service
+          predicates:
+            - Path=/notificacion/**
+          filters:
+            - StripPrefix=1
+        - id: report-service
+          uri: lb://report-service
+          predicates:
+            - Path=/reporte/**
+          filters:
+            - StripPrefix=1
+      # CORS para Vite (frontend actual); las APIs mantienen su JWT.
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - http://localhost:5173
+              - http://127.0.0.1:5173
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: '*'
+            exposedHeaders:
+              - Location
+            allowCredentials: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
