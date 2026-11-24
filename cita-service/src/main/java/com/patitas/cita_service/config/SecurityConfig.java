@@ -79,11 +79,11 @@ public class SecurityConfig {
      *
      * Por ejemplo:
      *
-     * - GET /api/citas: solo ADMIN.
-     * - GET /api/citas/mis-citas: usuario autenticado.
-     * - POST /api/citas: usuario autenticado.
-     * - PATCH /api/citas/{id}/estado: solo ADMIN.
-     * - DELETE /api/citas/{id}: solo ADMIN.
+     * - GET /api/v1/citas: solo ADMIN.
+     * - GET /api/v1/citas/mis-citas: usuario autenticado.
+     * - POST /api/v1/citas: usuario autenticado.
+     * - PATCH /api/v1/citas/{id}/estado: solo ADMIN.
+     * - DELETE /api/v1/citas/{id}: solo ADMIN.
      *
      * @param http Configuracion HTTP de Spring Security.
      * @return Cadena de filtros de seguridad.
@@ -152,8 +152,8 @@ public class SecurityConfig {
                  * en CitaController.
                  */
                 .requestMatchers(
-                    "/api/citas",
-                    "/api/citas/**"
+                    "/api/v1/citas",
+                    "/api/v1/citas/**"
                 ).authenticated()
 
                 /*

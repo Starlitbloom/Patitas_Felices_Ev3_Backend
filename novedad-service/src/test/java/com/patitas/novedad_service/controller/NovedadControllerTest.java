@@ -57,7 +57,7 @@ class NovedadControllerTest {
         when(service.listar())
                 .thenReturn(List.of(crearNovedad()));
 
-        mockMvc.perform(get("/api/novedades"))
+        mockMvc.perform(get("/api/v1/novedades"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].titulo")
@@ -69,7 +69,7 @@ class NovedadControllerTest {
         when(service.buscarPorId(1L))
                 .thenReturn(crearNovedad());
 
-        mockMvc.perform(get("/api/novedades/1"))
+        mockMvc.perform(get("/api/v1/novedades/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
     }
@@ -82,7 +82,7 @@ class NovedadControllerTest {
                 .thenThrow(new ResponseStatusException(
                         HttpStatus.NOT_FOUND));
 
-        mockMvc.perform(get("/api/novedades/99"))
+        mockMvc.perform(get("/api/v1/novedades/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -103,7 +103,7 @@ class NovedadControllerTest {
             }
             """;
 
-        mockMvc.perform(post("/api/novedades")
+        mockMvc.perform(post("/api/v1/novedades")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isCreated())
@@ -129,7 +129,7 @@ class NovedadControllerTest {
             }
             """;
 
-        mockMvc.perform(put("/api/novedades/1")
+        mockMvc.perform(put("/api/v1/novedades/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
@@ -139,7 +139,7 @@ class NovedadControllerTest {
 
     @Test
     void eliminarNovedadRetorna204() throws Exception {
-        mockMvc.perform(delete("/api/novedades/1"))
+        mockMvc.perform(delete("/api/v1/novedades/1"))
                 .andExpect(status().isNoContent());
 
         verify(service).eliminar(1L);

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/novedades")
+@RequestMapping("/api/v1/novedades")
 public class NovedadController {
 
     private final NovedadService service;

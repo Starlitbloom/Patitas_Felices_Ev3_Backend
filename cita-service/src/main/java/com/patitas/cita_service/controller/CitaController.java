@@ -50,7 +50,7 @@ import lombok.RequiredArgsConstructor;
  * se realizan en CitaService.
  */
 @RestController
-@RequestMapping("/api/citas")
+@RequestMapping("/api/v1/citas")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class CitaController {
@@ -66,7 +66,7 @@ public class CitaController {
     /**
      * Obtiene todas las citas registradas.
      *
-     * GET /api/citas
+     * GET /api/v1/citas
      *
      * Acceso exclusivo para administradores.
      *
@@ -84,7 +84,7 @@ public class CitaController {
     /**
      * Obtiene el historial de citas del usuario autenticado.
      *
-     * GET /api/citas/mis-citas
+     * GET /api/v1/citas/mis-citas
      *
      * El correo se obtiene de la autenticacion JWT.
      * No se permite indicar el correo de otro cliente.
@@ -108,7 +108,7 @@ public class CitaController {
     /**
      * Consulta una cita mediante su ID.
      *
-     * GET /api/citas/{id}
+     * GET /api/v1/citas/{id}
      *
      * Los clientes solo pueden consultar sus propias citas.
      * Los administradores pueden consultar cualquier cita.
@@ -138,7 +138,7 @@ public class CitaController {
     /**
      * Registra una nueva cita veterinaria.
      *
-     * POST /api/citas
+     * POST /api/v1/citas
      *
      * Requiere un usuario autenticado.
      *
@@ -174,7 +174,7 @@ public class CitaController {
         );
 
         URI ubicacion = URI.create(
-                "/api/citas/" + nueva.getId()
+                "/api/v1/citas/" + nueva.getId()
         );
 
         return ResponseEntity.created(ubicacion).body(nueva);
@@ -183,7 +183,7 @@ public class CitaController {
     /**
      * Actualiza una cita existente.
      *
-     * PUT /api/citas/{id}
+     * PUT /api/v1/citas/{id}
      *
      * Un cliente solo puede modificar sus propias citas.
      * Un administrador puede modificar cualquier cita
@@ -225,7 +225,7 @@ public class CitaController {
     /**
      * Cancela una reserva veterinaria.
      *
-     * PATCH /api/citas/{id}/cancelar
+     * PATCH /api/v1/citas/{id}/cancelar
      *
      * El cliente puede cancelar sus propias citas.
      * El administrador puede cancelar cualquier cita
@@ -259,7 +259,7 @@ public class CitaController {
     /**
      * Cambia el estado de una cita veterinaria.
      *
-     * PATCH /api/citas/{id}/estado
+     * PATCH /api/v1/citas/{id}/estado
      *
      * Acceso exclusivo para administradores.
      *
@@ -299,7 +299,7 @@ public class CitaController {
     /**
      * Elimina definitivamente una cita.
      *
-     * DELETE /api/citas/{id}
+     * DELETE /api/v1/citas/{id}
      *
      * Acceso exclusivo para administradores.
      *

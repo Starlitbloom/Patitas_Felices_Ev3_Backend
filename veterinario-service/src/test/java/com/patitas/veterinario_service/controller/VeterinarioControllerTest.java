@@ -34,11 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * Verifican las respuestas HTTP de los endpoints:
  *
- * GET    /api/veterinarios
- * GET    /api/veterinarios/{id}
- * POST   /api/veterinarios
- * PUT    /api/veterinarios/{id}
- * DELETE /api/veterinarios/{id}
+ * GET    /api/v1/veterinarios
+ * GET    /api/v1/veterinarios/{id}
+ * POST   /api/v1/veterinarios
+ * PUT    /api/v1/veterinarios/{id}
+ * DELETE /api/v1/veterinarios/{id}
  *
  * MockMvc simula solicitudes HTTP sin levantar
  * el servidor web.
@@ -138,7 +138,7 @@ class VeterinarioControllerTest {
         when(veterinarioService.listarVeterinarios())
                 .thenReturn(List.of(veterinario));
 
-        mockMvc.perform(get("/api/veterinarios"))
+        mockMvc.perform(get("/api/v1/veterinarios"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nombre")
@@ -160,7 +160,7 @@ class VeterinarioControllerTest {
         when(veterinarioService.obtenerVeterinarioPorId(1L))
                 .thenReturn(veterinario);
 
-        mockMvc.perform(get("/api/veterinarios/1"))
+        mockMvc.perform(get("/api/v1/veterinarios/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombre")
@@ -185,7 +185,7 @@ class VeterinarioControllerTest {
                         "Veterinario no encontrado"
                 ));
 
-        mockMvc.perform(get("/api/veterinarios/99"))
+        mockMvc.perform(get("/api/v1/veterinarios/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -203,7 +203,7 @@ class VeterinarioControllerTest {
                 any(Veterinario.class)))
                 .thenReturn(veterinario);
 
-        mockMvc.perform(post("/api/veterinarios")
+        mockMvc.perform(post("/api/v1/veterinarios")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper
                         .writeValueAsString(veterinario)))
@@ -211,7 +211,7 @@ class VeterinarioControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string(
                         "Location",
-                        "/api/veterinarios/1"
+                        "/api/v1/veterinarios/1"
                 ))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombre")
@@ -239,7 +239,7 @@ class VeterinarioControllerTest {
                 any(Veterinario.class)))
                 .thenReturn(veterinario);
 
-        mockMvc.perform(put("/api/veterinarios/1")
+        mockMvc.perform(put("/api/v1/veterinarios/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper
                         .writeValueAsString(veterinario)))
@@ -268,7 +268,7 @@ class VeterinarioControllerTest {
         doNothing().when(veterinarioService)
                 .eliminarVeterinario(1L);
 
-        mockMvc.perform(delete("/api/veterinarios/1"))
+        mockMvc.perform(delete("/api/v1/veterinarios/1"))
                 .andExpect(status().isNoContent());
 
         verify(veterinarioService)

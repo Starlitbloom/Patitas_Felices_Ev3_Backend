@@ -142,7 +142,7 @@ class CitaControllerTest {
 
     /**
      * TEST 1:
-     * Comprueba que GET /api/citas devuelva
+     * Comprueba que GET /api/v1/citas devuelva
      * HTTP 200 con las citas proporcionadas
      * por el servicio.
      */
@@ -154,7 +154,7 @@ class CitaControllerTest {
         when(citaService.listarTodas())
                 .thenReturn(List.of(cita));
 
-        mockMvc.perform(get("/api/citas"))
+        mockMvc.perform(get("/api/v1/citas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].mascota")
@@ -179,7 +179,7 @@ class CitaControllerTest {
                 .thenReturn(List.of(cita));
 
         mockMvc.perform(
-                get("/api/citas/mis-citas")
+                get("/api/v1/citas/mis-citas")
                         .principal(cliente())
         )
                 .andExpect(status().isOk())
@@ -207,7 +207,7 @@ class CitaControllerTest {
                 .thenReturn(cita);
 
         mockMvc.perform(
-                get("/api/citas/1")
+                get("/api/v1/citas/1")
                         .principal(cliente())
         )
                 .andExpect(status().isOk())
@@ -235,7 +235,7 @@ class CitaControllerTest {
                 ));
 
         mockMvc.perform(
-                get("/api/citas/99")
+                get("/api/v1/citas/99")
                         .principal(cliente())
         )
                 .andExpect(status().isNotFound());
@@ -243,7 +243,7 @@ class CitaControllerTest {
 
     /**
      * TEST 5:
-     * Comprueba que POST /api/citas devuelva
+     * Comprueba que POST /api/v1/citas devuelva
      * HTTP 201 al registrar una reserva.
      *
      * El servicio es simulado con Mockito.
@@ -260,7 +260,7 @@ class CitaControllerTest {
                 .thenReturn(cita);
 
         mockMvc.perform(
-                post("/api/citas")
+                post("/api/v1/citas")
                         .principal(cliente())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
@@ -271,7 +271,7 @@ class CitaControllerTest {
                 .andExpect(
                     header().string(
                         "Location",
-                        "/api/citas/1"
+                        "/api/v1/citas/1"
                     )
                 )
                 .andExpect(jsonPath("$.id").value(1))
@@ -287,7 +287,7 @@ class CitaControllerTest {
 
     /**
      * TEST 6:
-     * Comprueba que PUT /api/citas/{id}
+     * Comprueba que PUT /api/v1/citas/{id}
      * devuelva HTTP 200 al actualizar
      * una reserva existente.
      */
@@ -305,7 +305,7 @@ class CitaControllerTest {
                 .thenReturn(cita);
 
         mockMvc.perform(
-                put("/api/citas/1")
+                put("/api/v1/citas/1")
                         .principal(cliente())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
@@ -342,7 +342,7 @@ class CitaControllerTest {
                 .thenReturn(cita);
 
         mockMvc.perform(
-                patch("/api/citas/1/cancelar")
+                patch("/api/v1/citas/1/cancelar")
                         .principal(cliente())
         )
                 .andExpect(status().isOk())
@@ -376,7 +376,7 @@ class CitaControllerTest {
                 .thenReturn(cita);
 
         mockMvc.perform(
-                patch("/api/citas/1/estado")
+                patch("/api/v1/citas/1/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"estado\":\"Confirmada\"}")
         )
@@ -390,7 +390,7 @@ class CitaControllerTest {
 
     /**
      * TEST 9:
-     * Comprueba que DELETE /api/citas/{id}
+     * Comprueba que DELETE /api/v1/citas/{id}
      * devuelva HTTP 204 cuando el servicio
      * elimina correctamente la cita.
      */
@@ -398,7 +398,7 @@ class CitaControllerTest {
     void eliminarCitaRetorna204() throws Exception {
 
         mockMvc.perform(
-                delete("/api/citas/1")
+                delete("/api/v1/citas/1")
         )
                 .andExpect(status().isNoContent());
 

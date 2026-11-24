@@ -5,6 +5,11 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      # Cada microservicio ya responde con sus propios encabezados CORS y el gateway
+      # agrega los suyos: sin este filtro el navegador recibe el encabezado repetido
+      # y bloquea la respuesta.
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Access-Control-Allow-Methods Access-Control-Allow-Headers Vary, RETAIN_FIRST
       # Rutas por nombre de servicio registrado en Eureka.
       # Se quita el primer segmento y el resto se envia sin modificar.
       routes:

@@ -35,8 +35,8 @@ public class SecurityConfig {
                 // Cualquier visitante puede ver novedades
                 .requestMatchers(
                     HttpMethod.GET,
-                    "/api/novedades",
-                    "/api/novedades/**"
+                    "/api/v1/novedades",
+                    "/api/v1/novedades/**"
                 ).permitAll()
 
                 // Swagger
@@ -49,17 +49,17 @@ public class SecurityConfig {
                 // Solo el administrador modifica novedades
                 .requestMatchers(
                     HttpMethod.POST,
-                    "/api/novedades"
+                    "/api/v1/novedades"
                 ).hasRole("ADMIN")
 
                 .requestMatchers(
                     HttpMethod.PUT,
-                    "/api/novedades/**"
+                    "/api/v1/novedades/**"
                 ).hasRole("ADMIN")
 
                 .requestMatchers(
                     HttpMethod.DELETE,
-                    "/api/novedades/**"
+                    "/api/v1/novedades/**"
                 ).hasRole("ADMIN")
 
                 .anyRequest().denyAll()

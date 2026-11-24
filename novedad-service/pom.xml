@@ -20,9 +20,30 @@
 
     <properties>
         <java.version>21</java.version>
+		<spring-cloud.version>2024.0.2</spring-cloud.version>
     </properties>
 
+	<!-- Versiones de Spring Cloud (Eureka) -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
     <dependencies>
+		<!-- Registro en Eureka (lo usa el api-gateway para encontrar este servicio) -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
 
         <!-- Spring Boot: API REST -->
         <dependency>

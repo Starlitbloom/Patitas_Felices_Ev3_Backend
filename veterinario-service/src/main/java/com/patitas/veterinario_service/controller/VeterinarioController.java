@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
  * la logica de negocio a VeterinarioService.
  */
 @RestController
-@RequestMapping("/api/veterinarios")
+@RequestMapping("/api/v1/veterinarios")
 @RequiredArgsConstructor
 public class VeterinarioController {
 
@@ -49,7 +49,7 @@ public class VeterinarioController {
     /**
      * Obtiene todos los veterinarios registrados.
      *
-     * GET /api/veterinarios
+     * GET /api/v1/veterinarios
      *
      * Acceso publico.
      *
@@ -67,7 +67,7 @@ public class VeterinarioController {
     /**
      * Busca un veterinario mediante su identificador.
      *
-     * GET /api/veterinarios/{id}
+     * GET /api/v1/veterinarios/{id}
      *
      * Acceso publico.
      *
@@ -88,7 +88,7 @@ public class VeterinarioController {
     /**
      * Registra un nuevo veterinario en MySQL.
      *
-     * POST /api/veterinarios
+     * POST /api/v1/veterinarios
      *
      * Requiere un token JWT con rol ADMIN.
      *
@@ -108,7 +108,7 @@ public class VeterinarioController {
                 veterinarioService.crearVeterinario(veterinario);
 
         URI ubicacion = URI.create(
-                "/api/veterinarios/" + nuevo.getId()
+                "/api/v1/veterinarios/" + nuevo.getId()
         );
 
         return ResponseEntity.created(ubicacion).body(nuevo);
@@ -117,7 +117,7 @@ public class VeterinarioController {
     /**
      * Actualiza los datos de un veterinario existente.
      *
-     * PUT /api/veterinarios/{id}
+     * PUT /api/v1/veterinarios/{id}
      *
      * Requiere un token JWT con rol ADMIN.
      *
@@ -142,7 +142,7 @@ public class VeterinarioController {
     /**
      * Elimina un veterinario de MySQL.
      *
-     * DELETE /api/veterinarios/{id}
+     * DELETE /api/v1/veterinarios/{id}
      *
      * Requiere un token JWT con rol ADMIN.
      *

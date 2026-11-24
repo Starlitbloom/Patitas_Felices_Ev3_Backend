@@ -109,26 +109,26 @@ public class SecurityConfig {
                 // Cualquier usuario puede consultar veterinarios.
                 .requestMatchers(
                     HttpMethod.GET,
-                    "/api/veterinarios",
-                    "/api/veterinarios/**"
+                    "/api/v1/veterinarios",
+                    "/api/v1/veterinarios/**"
                 ).permitAll()
 
                 // Solo ADMIN puede registrar veterinarios.
                 .requestMatchers(
                     HttpMethod.POST,
-                    "/api/veterinarios"
+                    "/api/v1/veterinarios"
                 ).hasRole("ADMIN")
 
                 // Solo ADMIN puede actualizar veterinarios.
                 .requestMatchers(
                     HttpMethod.PUT,
-                    "/api/veterinarios/*"
+                    "/api/v1/veterinarios/*"
                 ).hasRole("ADMIN")
 
                 // Solo ADMIN puede eliminar veterinarios.
                 .requestMatchers(
                     HttpMethod.DELETE,
-                    "/api/veterinarios/*"
+                    "/api/v1/veterinarios/*"
                 ).hasRole("ADMIN")
 
                 // Bloquear cualquier otra ruta no definida.
