@@ -68,11 +68,11 @@ public class CitaController {
      *
      * GET /api/v1/citas
      *
-     * Acceso exclusivo para administradores.
+     * Acceso para el personal de la clinica (ADMIN y RECEPCIONISTA).
      *
      * @return HTTP 200 con todas las citas.
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping
     public ResponseEntity<List<Cita>> listarTodas() {
 
@@ -261,7 +261,7 @@ public class CitaController {
      *
      * PATCH /api/v1/citas/{id}/estado
      *
-     * Acceso exclusivo para administradores.
+     * Acceso para el personal de la clinica (ADMIN y RECEPCIONISTA).
      *
      * Estados permitidos:
      *
@@ -282,7 +282,7 @@ public class CitaController {
      * @param solicitud Nuevo estado solicitado.
      * @return HTTP 200 con el estado actualizado.
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @PatchMapping("/{id}/estado")
     public ResponseEntity<Cita> cambiarEstado(
             @PathVariable Long id,
@@ -333,12 +333,13 @@ public class CitaController {
     private boolean esAdministrador(
             Authentication authentication) {
 
+        // El personal de la clinica (ADMIN y RECEPCIONISTA)
+        // puede gestionar las citas de cualquier cliente.
         return authentication.getAuthorities()
                 .stream()
                 .anyMatch(autoridad ->
-                        "ROLE_ADMIN".equals(
-                                autoridad.getAuthority()
-                        )
+                        "ROLE_ADMIN".equals(autoridad.getAuthority())
+                        || "ROLE_RECEPCIONISTA".equals(autoridad.getAuthority())
                 );
     }
 

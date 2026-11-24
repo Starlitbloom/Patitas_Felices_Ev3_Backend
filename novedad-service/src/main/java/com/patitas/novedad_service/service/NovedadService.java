@@ -46,6 +46,9 @@ public class NovedadService {
         novedad.setTitulo(datos.getTitulo());
         novedad.setDescripcion(datos.getDescripcion());
         novedad.setImagenUrl(datos.getImagenUrl());
+        if (datos.getCategoria() != null) {
+            novedad.setCategoria(datos.getCategoria());
+        }
 
         if (datos.getActiva() != null) {
             novedad.setActiva(datos.getActiva());

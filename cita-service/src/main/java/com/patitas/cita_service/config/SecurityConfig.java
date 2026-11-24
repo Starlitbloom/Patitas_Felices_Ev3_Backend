@@ -79,10 +79,10 @@ public class SecurityConfig {
      *
      * Por ejemplo:
      *
-     * - GET /api/v1/citas: solo ADMIN.
+     * - GET /api/v1/citas: ADMIN y RECEPCIONISTA.
      * - GET /api/v1/citas/mis-citas: usuario autenticado.
      * - POST /api/v1/citas: usuario autenticado.
-     * - PATCH /api/v1/citas/{id}/estado: solo ADMIN.
+     * - PATCH /api/v1/citas/{id}/estado: ADMIN y RECEPCIONISTA.
      * - DELETE /api/v1/citas/{id}: solo ADMIN.
      *
      * @param http Configuracion HTTP de Spring Security.

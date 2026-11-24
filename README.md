@@ -57,25 +57,33 @@ El sistema está dividido en **10 microservicios Spring Boot**, cada uno con su 
 ## 🏗 Arquitectura
 
 ```
-                    ┌──────────────────────────┐
-                    │  Frontend React (Vite)   │
-                    │  http://localhost:5173   │
-                    └────────────┬─────────────┘
-                                 │  HTTP + JSON
-                                 │  Authorization: Bearer <token>
-        ┌────────────────────────┼─────────────────────────────┐
-        │                        │                             │
-┌───────▼────────┐   ┌───────────▼───────────┐   ┌─────────────▼─────────────┐
+                     ┌──────────────────────────┐
+                     │  Frontend React (Vite)   │
+                     │  http://localhost:5173   │
+                     └────────────┬─────────────┘
+                                  │  HTTP + JSON · Authorization: Bearer <token>
+                     ┌────────────▼─────────────┐        ┌──────────────────────┐
+                     │       api-gateway        │───────►│    eureka-server     │
+                     │  http://localhost:8080   │consulta│ http://localhost:8761│
+                     │ /auth/** → auth-service  │        │ registro de servicios│
+                     │ /cita/** → cita-service… │        └──────────▲───────────┘
+                     └────────────┬─────────────┘                   │ cada servicio
+        ┌─────────────────────────┼────────────────────────────┐    │ se registra
+┌───────▼────────┐   ┌────────────▼──────────┐   ┌─────────────▼────┴────────┐
 │  auth-service  │   │   mascota-service     │   │  historial-service ...    │
 │     :8081      │   │        :8082          │   │  (resto de servicios)     │
 │ emite el JWT   │   │  valida el JWT        │   │  validan el JWT           │
 └───────┬────────┘   └───────────┬───────────┘   └─────────────┬─────────────┘
-        │                        │                             │
    ┌────▼────┐              ┌────▼─────┐                  ┌────▼─────┐
    │ auth_db │              │mascota_db│                  │ ..._db   │
    └─────────┘              └──────────┘                  └──────────┘
                      MySQL 8 (contenedor Docker, puerto 3306)
 ```
+
+- **eureka-server (8761):** cada microservicio se registra al iniciar; en http://localhost:8761 se ve cuáles están arriba.
+- **api-gateway (8080):** punto de entrada único. Recibe `/<servicio>/**`, quita el primer segmento y lo reenvía al servicio registrado en Eureka. Ejemplo: `http://localhost:8080/auth/api/v1/auth/login` → `auth-service /api/v1/auth/login`.
+- Todas las rutas de los microservicios usan el prefijo `/api/v1`. Los servicios también responden directo en su puerto (útil para Swagger y pruebas).
+- Llamadas entre servicios: `report-service` consulta a auth, mascota, cita, contacto y notificación; `contacto-service` avisa a `notificacion-service`; `cita-service` valida el veterinario en `veterinario-service`.
 
 **Flujo de una petición protegida**
 
@@ -103,6 +111,8 @@ Los servicios son **stateless**: no guardan sesión; toda la información del us
 | contacto-service | 8088 | `contacto_db` | `/api/v1/mensajes` | María | Mensajes del formulario de contacto |
 | notificacion-service | 8089 | `notificacion_db` | `/api/v1/notificaciones` | María | Notificaciones para los usuarios |
 | report-service | 8090 | `report_db` | `/api/v1/reportes` | María | Reportes y estadísticas para el panel de administración |
+| eureka-server | 8761 | — | — | Equipo | Registro de microservicios (Netflix Eureka) |
+| api-gateway | 8080 | — | `/auth`, `/mascota`, `/historial`, `/servicio-clinico`, `/veterinario`, `/cita`, `/novedad`, `/contacto`, `/notificacion`, `/reporte` | Equipo | Punto de entrada único (Spring Cloud Gateway) |
 
 ---
 
@@ -148,30 +158,21 @@ Las tablas las crea Hibernate solo, pero las bases deben existir. Se crean todas
 docker exec mysql-patitas mysql -uroot -e "CREATE DATABASE IF NOT EXISTS auth_db; CREATE DATABASE IF NOT EXISTS mascota_db; CREATE DATABASE IF NOT EXISTS historial_db; CREATE DATABASE IF NOT EXISTS servicio_clinico_db; CREATE DATABASE IF NOT EXISTS veterinario_db; CREATE DATABASE IF NOT EXISTS cita_db; CREATE DATABASE IF NOT EXISTS novedad_db; CREATE DATABASE IF NOT EXISTS contacto_db; CREATE DATABASE IF NOT EXISTS notificacion_db; CREATE DATABASE IF NOT EXISTS report_db;"
 ```
 
-### 4. Variable de entorno JWT (solo para algunos servicios)
+### 4. Ejecutar los servicios
 
-`veterinario-service`, `cita-service` y `novedad-service` leen la clave desde la variable `JWT_SECRET`. Antes de ejecutarlos, en **la misma terminal** donde se van a correr:
+Cada servicio se ejecuta en **su propia terminal**, desde **su propia carpeta**. Orden recomendado:
 
-**Windows (cmd)**
-```cmd
-set JWT_SECRET=PatitasFelices$2026#ClaveSecretaJWT!VeterinariaSanMarcos
-```
+1. **eureka-server** (para que los demás se registren).
+2. **auth-service**, porque es el que entrega los tokens.
+3. El resto de los microservicios.
+4. **api-gateway** (al final; en http://localhost:8761 se revisa que todos estén registrados).
 
-**PowerShell**
-```powershell
-$env:JWT_SECRET='PatitasFelices$2026#ClaveSecretaJWT!VeterinariaSanMarcos'
-```
-
-**Linux / macOS**
 ```bash
-export JWT_SECRET='PatitasFelices$2026#ClaveSecretaJWT!VeterinariaSanMarcos'
+cd eureka-server
+./mvnw spring-boot:run        # Windows: .\mvnw.cmd spring-boot:run
 ```
 
-> La clave **debe ser exactamente la misma** en todos los servicios; si no, los tokens de auth-service se rechazan con `401`. Los demás servicios ya la tienen en su `application.properties`.
-
-### 5. Ejecutar los servicios
-
-Cada servicio se ejecuta en **su propia terminal**, desde **su propia carpeta**. Primero **auth-service**, porque es el que entrega los tokens:
+Luego auth-service:
 
 ```bash
 cd auth-service
@@ -536,8 +537,9 @@ Todos siguen la misma organización por capas:
 | `Communications link failure` / `Connection refused` | MySQL no está encendido | Abrir Docker Desktop y `docker start mysql-patitas` |
 | `failed to connect to the docker API` | Docker Desktop está cerrado o iniciando | Abrir Docker Desktop y esperar *Engine running* |
 | `Unknown database '..._db'` | La base no existe | Ejecutar el comando del paso 3 |
-| `Could not resolve placeholder 'JWT_SECRET'` | Falta la variable de entorno | Ver paso 4 |
-| `Port 80xx was already in use` | Ese servicio ya está corriendo en otra terminal | Cerrar la otra instancia (`Ctrl + C`) |
+| `Port 80xx was already in use` | Ese servicio ya está corriendo en otra terminal, u otro programa usa el puerto (por ejemplo Jenkins en el 8080) | Cerrar la otra instancia (`Ctrl + C`); para ver quién usa el puerto: `netstat -ano \| findstr :8080` |
+| Un servicio no aparece en http://localhost:8761 | Se inició antes que eureka-server o con una versión anterior | Reiniciarlo con eureka-server ya encendido |
+| `503` al llamar por el gateway | El servicio destino no está registrado en Eureka | Encenderlo y esperar unos segundos a que aparezca en http://localhost:8761 |
 | `401` con un token recién copiado | Token incompleto al copiarlo, o expiró (30 min) | Volver a hacer login y copiar el token completo |
 | `403` | El rol del token no tiene permiso | Usar un usuario con el rol adecuado |
 | Getters de Lombok marcados en rojo en VS Code | El editor no procesó Lombok | `Ctrl + Shift + P` → *Java: Clean Java Language Server Workspace* (Maven compila igual) |

@@ -28,6 +28,11 @@ public class Novedad {
     @Column(length = 500)
     private String imagenUrl;
 
+    // Categoría para filtrar en el sitio: Salud, Prevención, Bienestar o Consejos
+    @Size(max = 30, message = "La categoría no puede superar los 30 caracteres")
+    @Column(length = 30)
+    private String categoria;
+
     @Column(nullable = false)
     private LocalDateTime fechaPublicacion;
 
@@ -44,6 +49,9 @@ public class Novedad {
         }
         if (activa == null) {
             activa = true;
+        }
+        if (categoria == null || categoria.isBlank()) {
+            categoria = "Consejos";
         }
     }
 
@@ -77,6 +85,14 @@ public class Novedad {
 
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     public LocalDateTime getFechaPublicacion() {
