@@ -16,4 +16,6 @@ public interface SolicitudCambioRepository extends JpaRepository<SolicitudCambio
     /** Solicitud abierta de una mascota (solo puede haber una pendiente a la vez). */
     Optional<SolicitudCambio> findFirstByMascotaIdAndEstado(Long mascotaId, String estado);
 
+    /** Todas las solicitudes de una mascota, la más reciente primero. */
+    List<SolicitudCambio> findByMascotaIdOrderByFechaSolicitudDesc(Long mascotaId);
 }

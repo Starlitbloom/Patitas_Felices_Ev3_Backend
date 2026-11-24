@@ -35,7 +35,7 @@ public record MascotaRequest(
     @Email(message = "Correo invalido")  // Debe tener formato de correo (con @ y dominio)
     String correoDueno,  // Correo del dueño: lo vincula con su usuario
 
-    @Size(max = 255, message = "Maximo 255 caracteres")  // Máximo 255 caracteres
+    @Size(max = 1000000, message = "La imagen es demasiado grande")  // Máximo 1000000 caracteres
     String imagen,  // Ruta de la foto (ej: /img/golden.jpg)
 
     @Pattern(regexp = "al-dia|tratamiento|pendiente",

@@ -137,7 +137,11 @@ public class MascotaController {
         // El service crea la solicitud (aplica directo o la deja pendiente) y se devuelve su respuesta
         return SolicitudResponse.de(servicio.solicitarCambio(id, req, UsuarioActual.de(auth)));
     }
-
+    @GetMapping("/mascotas/{id}/solicitudes")
+    @Operation(summary = "Ver las solicitudes de cambio de una mascota (dueño o personal)")
+    public List<SolicitudResponse> solicitudesDeMascota(@PathVariable Long id, Authentication auth) {
+        return servicio.listarSolicitudesDeMascota(id, UsuarioActual.de(auth)).stream().map(SolicitudResponse::de).toList();
+    }
     // READ solicitudes: responde a GET /api/v1/solicitudes
     @GetMapping("/solicitudes")
     // Solo personal (ADMIN o RECEPCIONISTA)

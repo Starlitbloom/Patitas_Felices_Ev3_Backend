@@ -174,7 +174,12 @@ public class MascotaService {
         // Guarda la solicitud en MySQL y la devuelve (con su id y estado).
         return solicitudes.save(s);
     }
-
+    @Transactional(readOnly = true)
+    public List<SolicitudCambio> listarSolicitudesDeMascota(Long mascotaId, UsuarioActual usuario) {
+        Mascota m = buscar(mascotaId);
+        verificarAcceso(m, usuario);
+        return solicitudes.findByMascotaIdOrderByFechaSolicitudDesc(mascotaId);
+    }
     // Transacción de solo lectura, porque solo consulta.
     @Transactional(readOnly = true)
     // Lista las solicitudes de cambio, con filtro opcional por estado (ej: solo las pendientes).
@@ -272,7 +277,7 @@ public class MascotaService {
         // Igual con la imagen.
         if (hay(s.getImagen())) m.setImagen(s.getImagen());
         // Igual con la descripción.
-        if (hay(s.getDescripcion())) m.setDescripcion(s.getDescripcion());
+        if (s.getDescripcion() != null) m.setDescripcion(hay(s.getDescripcion()) ? s.getDescripcion() : null);
         // Después de los cambios, recalcula si la ficha quedó completa.
         m.recalcularCompleto();
     }
